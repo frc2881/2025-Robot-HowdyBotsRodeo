@@ -28,10 +28,10 @@ PATHPLANNER_ROBOT_CONFIG = RobotConfig.fromGUISettings()
 
 class Subsystems:
   class Drive:
-    kRobotWidth: units.meters = units.inchesToMeters(31.5)
-    kRobotLength: units.meters = units.inchesToMeters(34.5)
-    kTrackWidth: units.meters = units.inchesToMeters(21.5)
-    kWheelBase: units.meters = units.inchesToMeters(24.5)
+    kRobotWidth: units.meters = units.inchesToMeters(25.5)
+    kRobotLength: units.meters = units.inchesToMeters(38.0)
+    kTrackWidth: units.meters = units.inchesToMeters(17.0)
+    kWheelBase: units.meters = units.inchesToMeters(27.0)
 
     kTranslationSpeedMax: units.meters_per_second = 4.46
     kRotationSpeedMax: units.degrees_per_second = 360.0
@@ -40,18 +40,18 @@ class Subsystems:
     kInputRateLimitDemo: units.percent = 0.33
 
     _differentialModuleConstants = DifferentialModuleConstants(
-      wheelDiameter = units.inchesToMeters(3.0),
+      wheelDiameter = units.inchesToMeters(4.0),
       drivingMotorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       drivingMotorType = SparkLowLevel.MotorType.kBrushless,
-      drivingMotorCurrentLimit = 50,
+      drivingMotorCurrentLimit = 80,
       drivingMotorReduction = 8.46
     )
 
     kDifferentialModuleConfigs: tuple[DifferentialModuleConfig, ...] = (
       DifferentialModuleConfig(DifferentialModuleLocation.Left, 2, None, True, _differentialModuleConstants),
-      DifferentialModuleConfig(DifferentialModuleLocation.Right, 5, None, False, _differentialModuleConstants),
+      DifferentialModuleConfig(DifferentialModuleLocation.Right, 4, None, False, _differentialModuleConstants),
       DifferentialModuleConfig(DifferentialModuleLocation.Left, 3, 2, True, _differentialModuleConstants),
-      DifferentialModuleConfig(DifferentialModuleLocation.Right, 6, 5, False, _differentialModuleConstants)
+      DifferentialModuleConfig(DifferentialModuleLocation.Right, 5, 4, False, _differentialModuleConstants)
     )
 
     kDriveKinematics = DifferentialDriveKinematics(kTrackWidth)
@@ -86,7 +86,7 @@ class Services:
 class Sensors: 
   class Gyro:
     class NAVX2:
-      kComType = AHRS.NavXComType.kUSB1
+      kComType = AHRS.NavXComType.kMXP_SPI
 
   class Pose:
     _poseSensorConstants = PoseSensorConstants(
