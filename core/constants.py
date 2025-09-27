@@ -132,6 +132,6 @@ class Game:
           utils.getTargetHash(APRIL_TAG_FIELD_LAYOUT.getTagPose(1).toPose2d()): Target(TargetType.Default, APRIL_TAG_FIELD_LAYOUT.getTagPose(1))
         },
         Alliance.Blue: {
-          utils.getTargetHash(APRIL_TAG_FIELD_LAYOUT.getTagPose(12).toPose2d()): Target(TargetType.Default, APRIL_TAG_FIELD_LAYOUT.getTagPose(12))
+          utils.getTargetHash(APRIL_TAG_FIELD_LAYOUT.getTagPose(2).toPose2d()): Target(TargetType.Default, APRIL_TAG_FIELD_LAYOUT.getTagPose(2))
         }
       }
