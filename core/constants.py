@@ -28,10 +28,10 @@ PATHPLANNER_ROBOT_CONFIG = RobotConfig.fromGUISettings()
 
 class Subsystems:
   class Drive:
-    kRobotWidth: units.meters = units.inchesToMeters(25.5)
-    kRobotLength: units.meters = units.inchesToMeters(38.0)
-    kTrackWidth: units.meters = units.inchesToMeters(17.0)
-    kWheelBase: units.meters = units.inchesToMeters(27.0)
+    kRobotWidth: units.meters = units.inchesToMeters(25.5) # TODO: measure real value for robot chassis (total width includes bumpers)
+    kRobotLength: units.meters = units.inchesToMeters(38.0) # TODO: measure real value for robot chassis (total length includes bumpers)
+    kTrackWidth: units.meters = units.inchesToMeters(17.0) # TODO: measure real value for robot chassis (track width is from wheel centers left to right)
+    kWheelBase: units.meters = units.inchesToMeters(27.0) # TODO: measure real value for robot chassis (wheel base is from wheel center front to back)
 
     kTranslationSpeedMax: units.meters_per_second = 4.46
     kRotationSpeedMax: units.degrees_per_second = 360.0
@@ -40,13 +40,14 @@ class Subsystems:
     kInputRateLimitDemo: units.percent = 0.33
 
     _differentialModuleConstants = DifferentialModuleConstants(
-      wheelDiameter = units.inchesToMeters(4.0),
+      wheelDiameter = units.inchesToMeters(4.0), # TODO: measure real value for robot wheels
       drivingMotorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       drivingMotorType = SparkLowLevel.MotorType.kBrushless,
       drivingMotorCurrentLimit = 80,
-      drivingMotorReduction = 8.46
+      drivingMotorReduction = 8.46 # TODO: confirm NEO motor and standard gear reduction
     )
 
+    # TODO: ensure that drivetrain motor CAN Id assignments match this configuration below (same setup as Demo-TinCan robot)
     kDifferentialModuleConfigs: tuple[DifferentialModuleConfig, ...] = (
       DifferentialModuleConfig(DifferentialModuleLocation.Left, 2, None, True, _differentialModuleConstants),
       DifferentialModuleConfig(DifferentialModuleLocation.Right, 4, None, False, _differentialModuleConstants),
