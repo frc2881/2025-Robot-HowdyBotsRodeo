@@ -13,13 +13,16 @@ from lib.classes import (
   Alliance, 
   PID, 
   Tolerance,
+  Range,
   DifferentialModuleConstants, 
   DifferentialModuleConfig, 
   DifferentialModuleLocation,
   DriftCorrectionConstants, 
   TargetAlignmentConstants,
   PoseSensorConstants,
-  PoseSensorConfig
+  PoseSensorConfig,
+  PositionControlModuleConstants,
+  PositionControlModuleConfig
 )
 from core.classes import Target, TargetType
 
@@ -77,6 +80,33 @@ class Subsystems:
       rotationTranslationModeOffset = 180.0
     )
 
+  class Arm:
+    kArmConfig = PositionControlModuleConfig("Arm", 10, None, True, PositionControlModuleConstants(
+      distancePerRotation = 1.0,
+      motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
+      motorType = SparkLowLevel.MotorType.kBrushless,
+      motorCurrentLimit = 80,
+      motorReduction = 1.0 / 1.0,
+      motorPID = PID(0.1, 0, 0.07),
+      motorOutputRange = Range(-0.5, 0.5),
+      motorMotionMaxVelocity = 8000.0,
+      motorMotionMaxAcceleration = 16000.0,
+      motorMotionVelocityFF = 1.0 / 5676,
+      motorMotionAllowedClosedLoopError = 0.25,
+      motorSoftLimitForward = 35.0,
+      motorSoftLimitReverse = 1.0,
+      motorResetSpeed = 0.4
+    ))
+
+    kInputLimit: units.percent = 1.0
+
+  class Intake:
+    kMotorCANId: int = 12
+    kMotorCurrentLimit: int = 40
+    kMotorIntakeSpeed: units.percent = 0.8
+    kMotorEjectSpeed: units.percent = 1.0
+    kEjectTimeout: units.seconds = 1.0
+
 class Services:
   class Localization:
     kVisionMaxTargetDistance: units.meters = 4.0
@@ -132,6 +162,6 @@ class Game:
           utils.getTargetHash(APRIL_TAG_FIELD_LAYOUT.getTagPose(1).toPose2d()): Target(TargetType.Default, APRIL_TAG_FIELD_LAYOUT.getTagPose(1))
         },
         Alliance.Blue: {
-          utils.getTargetHash(APRIL_TAG_FIELD_LAYOUT.getTagPose(12).toPose2d()): Target(TargetType.Default, APRIL_TAG_FIELD_LAYOUT.getTagPose(12))
+          utils.getTargetHash(APRIL_TAG_FIELD_LAYOUT.getTagPose(2).toPose2d()): Target(TargetType.Default, APRIL_TAG_FIELD_LAYOUT.getTagPose(2))
         }
       }

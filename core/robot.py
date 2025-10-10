@@ -7,6 +7,8 @@ from lib.sensors.pose import PoseSensor
 from core.commands.auto import Auto
 from core.commands.game import Game
 from core.subsystems.drive import Drive
+from core.subsystems.arm import Arm
+from core.subsystems.intake import Intake
 from core.services.localization import Localization
 import core.constants as constants
 
@@ -27,6 +29,8 @@ class RobotCore:
     
   def _initSubsystems(self) -> None:
     self.drive = Drive(self.gyro.getHeading)
+    self.arm = Arm()
+    self.intake = Intake()
     
   def _initServices(self) -> None:
     self.localization = Localization(
@@ -68,9 +72,9 @@ class RobotCore:
     self.driver.back().whileTrue(cmd.waitSeconds(0.5).andThen(self.gyro.reset()))
 
   def _setupOperator(self) -> None:
-    pass
-    # self.operator.rightTrigger().whileTrue(cmd.none())
-    # self.operator.leftTrigger().whileTrue(cmd.none())
+    self.arm.setDefaultCommand(self.arm.setSpeed(self.operator.getRightY))
+    self.operator.leftTrigger().whileTrue(self.intake.runIntake())
+    self.operator.rightTrigger().whileTrue(self.intake.runEject())
     # self.operator.rightBumper().whileTrue(cmd.none())
     # self.operator.leftBumper().whileTrue(cmd.none())
     # self.operator.povUp().whileTrue(cmd.none())
