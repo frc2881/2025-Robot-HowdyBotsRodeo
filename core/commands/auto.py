@@ -30,7 +30,7 @@ class Auto:
       self._robot.drive.setChassisSpeeds, 
       constants.Subsystems.Drive.kPathPlannerController,
       constants.Subsystems.Drive.kPathPlannerRobotConfig,
-      lambda: utils.getAlliance() == Alliance.Red,
+      lambda: False,
       self._robot.drive
     )
 

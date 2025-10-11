@@ -55,24 +55,28 @@ class Localization():
     for poseSensor in self._poseSensors:
       estimatedRobotPose = poseSensor.getEstimatedRobotPose()
       if estimatedRobotPose is not None:
-        if self._isValidRobotPose(estimatedRobotPose.estimatedPose):
-          totalTargets = 0
-          totalDistance = 0
-          for target in estimatedRobotPose.targetsUsed:
-            distance = target.getBestCameraToTarget().translation().norm()
-            if self._isValidTarget(distance, target.getPoseAmbiguity(), estimatedRobotPose.strategy):
-              totalTargets += 1
-              totalDistance += distance
-          if totalTargets > 0:
-            hasVisionTarget = True
-            avgDistance = totalDistance / totalTargets
-            stdDevTranslation = 0.02 * avgDistance * avgDistance if totalTargets > 1 else 0.5 * avgDistance / 4.0
-            stdDevRotation = 0.3 * avgDistance * avgDistance if totalTargets > 1 else 1.0
-            self._poseEstimator.addVisionMeasurement(
-              estimatedRobotPose.estimatedPose.toPose2d(), 
-              estimatedRobotPose.timestampSeconds,
-              (stdDevTranslation, stdDevTranslation, stdDevRotation)
-            )
+        self._poseEstimator.addVisionMeasurement(
+          estimatedRobotPose.estimatedPose.toPose2d(), 
+          estimatedRobotPose.timestampSeconds
+        )
+        # if self._isValidRobotPose(estimatedRobotPose.estimatedPose):
+        #   totalTargets = 0
+        #   totalDistance = 0
+        #   for target in estimatedRobotPose.targetsUsed:
+        #     distance = target.getBestCameraToTarget().translation().norm()
+        #     if self._isValidTarget(distance, target.getPoseAmbiguity(), estimatedRobotPose.strategy):
+        #       totalTargets += 1
+        #       totalDistance += distance
+        #   if totalTargets > 0:
+        #     hasVisionTarget = True
+        #     avgDistance = totalDistance / totalTargets
+        #     stdDevTranslation = 0.02 * avgDistance * avgDistance if totalTargets > 1 else 0.5 * avgDistance / 4.0
+        #     stdDevRotation = 0.3 * avgDistance * avgDistance if totalTargets > 1 else 1.0
+        #     self._poseEstimator.addVisionMeasurement(
+        #       estimatedRobotPose.estimatedPose.toPose2d(), 
+        #       estimatedRobotPose.timestampSeconds,
+        #       (stdDevTranslation, stdDevTranslation, stdDevRotation)
+        #     )
     self._robotPose = self._poseEstimator.getEstimatedPosition()
     if hasVisionTarget:
       self._hasValidVisionTarget = True

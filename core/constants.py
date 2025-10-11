@@ -1,5 +1,5 @@
 from wpimath import units
-from wpimath.geometry import Translation2d
+from wpimath.geometry import Translation2d, Transform3d, Translation3d, Rotation3d
 from wpimath.kinematics import DifferentialDriveKinematics
 import wpilib
 from robotpy_apriltag import AprilTagFieldLayout
@@ -31,10 +31,10 @@ PATHPLANNER_ROBOT_CONFIG = RobotConfig.fromGUISettings()
 
 class Subsystems:
   class Drive:
-    kRobotWidth: units.meters = units.inchesToMeters(25.5) # TODO: measure real value for robot chassis (total width includes bumpers)
-    kRobotLength: units.meters = units.inchesToMeters(38.0) # TODO: measure real value for robot chassis (total length includes bumpers)
-    kTrackWidth: units.meters = units.inchesToMeters(17.0) # TODO: measure real value for robot chassis (track width is from wheel centers left to right)
-    kWheelBase: units.meters = units.inchesToMeters(27.0) # TODO: measure real value for robot chassis (wheel base is from wheel center front to back)
+    kRobotWidth: units.meters = units.inchesToMeters(30.0)
+    kRobotLength: units.meters = units.inchesToMeters(39.0)
+    kTrackWidth: units.meters = units.inchesToMeters(17.75)
+    kWheelBase: units.meters = units.inchesToMeters(23.5)
 
     kTranslationSpeedMax: units.meters_per_second = 4.46
     kRotationSpeedMax: units.degrees_per_second = 360.0
@@ -43,19 +43,18 @@ class Subsystems:
     kInputRateLimitDemo: units.percent = 0.33
 
     _differentialModuleConstants = DifferentialModuleConstants(
-      wheelDiameter = units.inchesToMeters(4.0), # TODO: measure real value for robot wheels
+      wheelDiameter = units.inchesToMeters(6.0),
       drivingMotorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       drivingMotorType = SparkLowLevel.MotorType.kBrushless,
       drivingMotorCurrentLimit = 80,
-      drivingMotorReduction = 8.46 # TODO: confirm NEO motor and standard gear reduction
+      drivingMotorReduction = 12.76
     )
 
-    # TODO: ensure that drivetrain motor CAN Id assignments match this configuration below (same setup as Demo-TinCan robot)
     kDifferentialModuleConfigs: tuple[DifferentialModuleConfig, ...] = (
-      DifferentialModuleConfig(DifferentialModuleLocation.Left, 2, None, True, _differentialModuleConstants),
-      DifferentialModuleConfig(DifferentialModuleLocation.Right, 4, None, False, _differentialModuleConstants),
-      DifferentialModuleConfig(DifferentialModuleLocation.Left, 3, 2, True, _differentialModuleConstants),
-      DifferentialModuleConfig(DifferentialModuleLocation.Right, 5, 4, False, _differentialModuleConstants)
+      DifferentialModuleConfig(DifferentialModuleLocation.Left, 2, None, False, _differentialModuleConstants),
+      DifferentialModuleConfig(DifferentialModuleLocation.Right, 4, None, True, _differentialModuleConstants),
+      DifferentialModuleConfig(DifferentialModuleLocation.Left, 3, 2, False, _differentialModuleConstants),
+      DifferentialModuleConfig(DifferentialModuleLocation.Right, 5, 4, True, _differentialModuleConstants)
     )
 
     kDriveKinematics = DifferentialDriveKinematics(kTrackWidth)
@@ -88,14 +87,14 @@ class Subsystems:
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80,
       motorReduction = 1.0 / 1.0,
-      motorPID = PID(0.1, 0, 0.07),
-      motorOutputRange = Range(-0.5, 0.5),
-      motorMotionMaxVelocity = 8000.0,
-      motorMotionMaxAcceleration = 16000.0,
+      motorPID = PID(0.1, 0, 0.01),
+      motorOutputRange = Range(-0.5, 1.0),
+      motorMotionMaxVelocity = 5000.0,
+      motorMotionMaxAcceleration = 10000.0,
       motorMotionVelocityFF = 1.0 / 5676,
-      motorMotionAllowedClosedLoopError = 0.25,
-      motorSoftLimitForward = 35.0,
-      motorSoftLimitReverse = 1.0,
+      motorMotionAllowedClosedLoopError = 0.01,
+      motorSoftLimitForward = 0.25,
+      motorSoftLimitReverse = 0.03,
       motorResetSpeed = 0.4
     ))
 
@@ -104,7 +103,7 @@ class Subsystems:
   class Intake:
     kMotorCANId: int = 12
     kMotorCurrentLimit: int = 40
-    kMotorIntakeSpeed: units.percent = 0.8
+    kMotorIntakeSpeed: units.percent = 0.3
     kMotorEjectSpeed: units.percent = 1.0
     kEjectTimeout: units.seconds = 1.0
 
@@ -127,13 +126,13 @@ class Sensors:
     )
 
     kPoseSensorConfigs: tuple[PoseSensorConfig, ...] = (
-      # PoseSensorConfig(
-      #   "Front",
-      #   Transform3d(
-      #     Translation3d(units.inchesToMeters(9.0), units.inchesToMeters(1.5), units.inchesToMeters(18.5)),
-      #     Rotation3d(units.degreesToRadians(0), units.degreesToRadians(11.0), units.degreesToRadians(0))
-      #   ), _poseSensorConstants
-      # )
+      PoseSensorConfig(
+        "Rear",
+        Transform3d(
+          Translation3d(units.inchesToMeters(-3.0), units.inchesToMeters(0.0), units.inchesToMeters(19.5)),
+          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-21.5), units.degreesToRadians(-180.0))
+        ), _poseSensorConstants
+      ),
     )
 
   class Camera:
@@ -163,6 +162,6 @@ class Game:
           utils.getTargetHash(APRIL_TAG_FIELD_LAYOUT.getTagPose(1).toPose2d()): Target(TargetType.Default, APRIL_TAG_FIELD_LAYOUT.getTagPose(1))
         },
         Alliance.Blue: {
-          utils.getTargetHash(APRIL_TAG_FIELD_LAYOUT.getTagPose(2).toPose2d()): Target(TargetType.Default, APRIL_TAG_FIELD_LAYOUT.getTagPose(2))
+          utils.getTargetHash(APRIL_TAG_FIELD_LAYOUT.getTagPose(1).toPose2d()): Target(TargetType.Default, APRIL_TAG_FIELD_LAYOUT.getTagPose(1))
         }
       }

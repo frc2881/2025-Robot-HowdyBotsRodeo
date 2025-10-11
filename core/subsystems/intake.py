@@ -23,18 +23,32 @@ class Intake(Subsystem):
       )
     )
 
+    self._motor2 = SparkMax(13, SparkBase.MotorType.kBrushless)
+    self._sparkConfig2 = SparkBaseConfig()
+    (self._sparkConfig2
+      .setIdleMode(SparkBaseConfig.IdleMode.kBrake)
+      .smartCurrentLimit(self._constants.kMotorCurrentLimit))
+    self._sparkConfig2.follow(12, False)
+    utils.setSparkConfig(
+      self._motor2.configure(
+        self._sparkConfig2,
+        SparkBase.ResetMode.kResetSafeParameters,
+        SparkBase.PersistMode.kPersistParameters
+      )
+    )
+
   def periodic(self) -> None:
     self._updateTelemetry()
       
   def runIntake(self) -> Command:
     return self.runEnd(
-      lambda: self._motor.set(self._constants.kMotorIntakeSpeed),
+      lambda: self._motor.set(-self._constants.kMotorIntakeSpeed),
       lambda: self.reset()
     ).withName("Intake:Run")
 
   def runEject(self) -> Command:
     return self.startEnd(
-      lambda: self._motor.set(-self._constants.kMotorEjectSpeed),
+      lambda: self._motor.set(self._constants.kMotorEjectSpeed),
       lambda: self.reset()
     ).withTimeout(
       self._constants.kEjectTimeout

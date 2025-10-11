@@ -59,7 +59,7 @@ class Drive(Subsystem):
     self._targetAlignmentRotationController.setTolerance(*self._constants.kTargetAlignmentConstants.rotationTolerance)
     self._targetAlignmentRotationController.enableContinuousInput(-180.0, 180.0)
 
-    self._speedMode: SpeedMode = SpeedMode.Competition
+    self._speedMode: SpeedMode = SpeedMode.Demo
     speedMode = SendableChooser()
     speedMode.setDefaultOption(SpeedMode.Competition.name, SpeedMode.Competition)
     speedMode.addOption(SpeedMode.Demo.name, SpeedMode.Demo)
