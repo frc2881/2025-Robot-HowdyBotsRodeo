@@ -1,3 +1,4 @@
+import math
 from wpimath import units
 from wpimath.geometry import Translation2d, Transform3d, Translation3d, Rotation3d
 from wpimath.kinematics import DifferentialDriveKinematics
@@ -21,8 +22,8 @@ from lib.classes import (
   TargetAlignmentConstants,
   PoseSensorConstants,
   PoseSensorConfig,
-  PositionControlModuleConstants,
-  PositionControlModuleConfig
+  AbsolutePositionControlModuleConstants,
+  AbsolutePositionControlModuleConfig
 )
 from core.classes import Target, TargetType
 
@@ -81,8 +82,9 @@ class Subsystems:
     )
 
   class Arm:
-    kArmConfig = PositionControlModuleConfig("Arm", 10, None, True, PositionControlModuleConstants(
-      distancePerRotation = 1.0,
+    kArmConfig = AbsolutePositionControlModuleConfig("Arm", 10, None, True, AbsolutePositionControlModuleConstants(
+      encoderPositionConversionFactor = units.degreesToRadians(360.0),
+      isEncoderInverted = False,
       motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80,
@@ -91,12 +93,13 @@ class Subsystems:
       motorOutputRange = Range(-0.5, 1.0),
       motorMotionMaxVelocity = 5000.0,
       motorMotionMaxAcceleration = 10000.0,
-      motorMotionVelocityFF = 1.0 / 5676,
       motorMotionAllowedClosedLoopError = 0.01,
       motorSoftLimitForward = 0.25,
       motorSoftLimitReverse = 0.03,
       motorResetSpeed = 0.4
     ))
+
+    kArmFollowerConfig = AbsolutePositionControlModuleConfig("ArmFollower", 11, 10, True, kArmConfig.constants)
 
     kInputLimit: units.percent = 1.0
 

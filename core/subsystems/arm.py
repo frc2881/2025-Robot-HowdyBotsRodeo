@@ -2,9 +2,8 @@ from typing import Callable
 from commands2 import Subsystem, Command
 from wpilib import SmartDashboard
 from wpimath import units
-from rev import SparkMax, SparkBaseConfig, SparkBase
 from lib import logger, utils
-from lib.components.position_control_module import PositionControlModule
+from lib.components.absolute_position_control_module import AbsolutePositionControlModule
 import core.constants as constants
 
 class Arm(Subsystem):
@@ -12,23 +11,8 @@ class Arm(Subsystem):
     super().__init__()
     self._constants = constants.Subsystems.Arm
 
-    self._hasInitialZeroReset: bool = False
-
-    self._arm = PositionControlModule(self._constants.kArmConfig)
-
-    self._motor = SparkMax(11, SparkBase.MotorType.kBrushless)
-    self._sparkConfig = SparkBaseConfig()
-    (self._sparkConfig
-      .setIdleMode(SparkBaseConfig.IdleMode.kBrake)
-      .smartCurrentLimit(80))
-    self._sparkConfig.follow(10, True)
-    utils.setSparkConfig(
-      self._motor.configure(
-        self._sparkConfig,
-        SparkBase.ResetMode.kResetSafeParameters,
-        SparkBase.PersistMode.kPersistParameters
-      )
-    )
+    self._arm = AbsolutePositionControlModule(self._constants.kArmConfig)
+    self._armFollower = AbsolutePositionControlModule(self._constants.kArmFollowerConfig)
 
   def periodic(self) -> None:
     self._updateTelemetry()
@@ -49,12 +33,6 @@ class Arm(Subsystem):
 
   def isAtTargetPosition(self) -> bool:
     return self._arm.isAtTargetPosition()
-
-  def resetToZero(self) -> Command:
-    return self._arm.resetToZero(self).withName("Arm:ResetToZero")
-
-  def hasZeroReset(self) -> bool:
-    return self._arm.hasZeroReset()
 
   def reset(self) -> None:
     self._arm.reset()
