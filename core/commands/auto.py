@@ -2,11 +2,7 @@ from typing import TYPE_CHECKING
 from enum import Enum, auto
 from commands2 import Command, cmd
 from wpilib import SendableChooser, SmartDashboard
-from wpimath.geometry import Transform2d
-from pathplannerlib.auto import AutoBuilder
-from pathplannerlib.path import PathPlannerPath
 from lib import logger, utils
-from lib.classes import Alliance
 if TYPE_CHECKING: from core.robot import RobotCore
 import core.constants as constants
 
@@ -20,19 +16,7 @@ class Auto:
     ) -> None:
     self._robot = robot
 
-    self._paths = { path: PathPlannerPath.fromPathFile(path.name) for path in AutoPath }
     self._auto = cmd.none()
-
-    AutoBuilder.configure(
-      self._robot.localization.getRobotPose, 
-      self._robot.localization.resetRobotPose,
-      self._robot.drive.getChassisSpeeds, 
-      self._robot.drive.setChassisSpeeds, 
-      constants.Subsystems.Drive.kPathPlannerController,
-      constants.Subsystems.Drive.kPathPlannerRobotConfig,
-      lambda: False,
-      self._robot.drive
-    )
 
     self._autos = SendableChooser()
     self._autos.setDefaultOption("None", cmd.none)
@@ -48,19 +32,21 @@ class Auto:
   def set(self, auto: Command) -> None:
     self._auto = auto
   
-  def _reset(self, path: AutoPath) -> Command:
+  def _moveForwards(self) -> Command:
     return (
-      AutoBuilder.resetOdom(self._paths.get(path).getPathPoses()[0].transformBy(Transform2d(0, 0, self._paths.get(path).getInitialHeading())))
-      .andThen(cmd.waitSeconds(0.1))
+      self._robot.drive.drive(lambda: 1.0, lambda: 0.0).withTimeout(3.4).andThen(self._robot.drive.reset())
     )
   
-  def _move(self, path: AutoPath) -> Command:
+  def _moveBackwards(self) -> Command:
     return (
-      AutoBuilder.followPath(self._paths.get(path))
-      .deadlineFor(logger.log_(f'Auto:Move:{path.name}'))
+      self._robot.drive.drive(lambda: -1.0, lambda: 0.0).withTimeout(2.5).andThen(self._robot.drive.reset())
     )
 
   def auto_1(self) -> Command:
-    return cmd.sequence(
-      self._move(AutoPath.Move1)
+    return (
+      self._moveForwards()
+      .andThen(cmd.waitSeconds(2.0))
+      .andThen(self._robot.intake.eject())
+      .deadlineFor(self._robot.arm.setPosition(constants.Subsystems.Arm.kArmPositionScoreSalvage))
+      .andThen(self._moveBackwards())
     ).withName("Auto:[1]")

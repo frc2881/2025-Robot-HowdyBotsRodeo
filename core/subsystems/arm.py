@@ -23,12 +23,12 @@ class Arm(Subsystem):
       lambda: self.reset()
     ).withName("Arm:SetSpeed")
   
-  def setPosition(self, position: units.inches) -> Command:
+  def setPosition(self, position: float) -> Command:
     return self.run(
       lambda: self._arm.setPosition(position)
     ).withName("Arm:SetPosition")
   
-  def getPosition(self) -> units.inches:
+  def getPosition(self) -> float:
     return self._arm.getPosition()
 
   def isAtTargetPosition(self) -> bool:

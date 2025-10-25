@@ -52,13 +52,13 @@ class Localization():
   def _updateRobotPose(self) -> None:
     self._poseEstimator.update(self._getGyroRotation(), *self._getDriveModulePositions())
     hasVisionTarget = False
-    for poseSensor in self._poseSensors:
-      estimatedRobotPose = poseSensor.getEstimatedRobotPose()
-      if estimatedRobotPose is not None:
-        self._poseEstimator.addVisionMeasurement(
-          estimatedRobotPose.estimatedPose.toPose2d(), 
-          estimatedRobotPose.timestampSeconds
-        )
+    # for poseSensor in self._poseSensors:
+    #   estimatedRobotPose = poseSensor.getEstimatedRobotPose()
+    #   if estimatedRobotPose is not None:
+    #     self._poseEstimator.addVisionMeasurement(
+    #       estimatedRobotPose.estimatedPose.toPose2d(), 
+    #       estimatedRobotPose.timestampSeconds
+    #     )
         # if self._isValidRobotPose(estimatedRobotPose.estimatedPose):
         #   totalTargets = 0
         #   totalDistance = 0
@@ -78,12 +78,12 @@ class Localization():
         #       (stdDevTranslation, stdDevTranslation, stdDevRotation)
         #     )
     self._robotPose = self._poseEstimator.getEstimatedPosition()
-    if hasVisionTarget:
-      self._hasValidVisionTarget = True
-      self._validVisionTargetBufferTimer.restart()
-    else:
-      if self._hasValidVisionTarget and self._validVisionTargetBufferTimer.hasElapsed(0.1):
-        self._hasValidVisionTarget = False
+    # if hasVisionTarget:
+    #   self._hasValidVisionTarget = True
+    #   self._validVisionTargetBufferTimer.restart()
+    # else:
+    #   if self._hasValidVisionTarget and self._validVisionTargetBufferTimer.hasElapsed(0.1):
+    #     self._hasValidVisionTarget = False
 
   def _isValidTarget(self, distance: units.meters, ambiguity: units.percent, strategy: PoseStrategy) -> bool:
     return (

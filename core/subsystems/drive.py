@@ -94,7 +94,7 @@ class Drive(Subsystem):
 
   def drive(self, getInputLeft: Callable[[], units.percent], getInputRight: Callable[[], units.percent]) -> Command:
     return self.run(
-      lambda: self._drive(getInputLeft(), getInputRight())
+      lambda: self._drive(getInputLeft() * self._constants.kInputLimitDemo, getInputRight() * self._constants.kInputLimitDemo)
     ).withName("Drive:Drive")
 
   def _drive(self, speed: float, rotation: float) -> None:

@@ -40,13 +40,13 @@ class Intake(Subsystem):
   def periodic(self) -> None:
     self._updateTelemetry()
       
-  def runIntake(self) -> Command:
+  def intake(self) -> Command:
     return self.runEnd(
       lambda: self._motor.set(-self._constants.kMotorIntakeSpeed),
       lambda: self.reset()
     ).withName("Intake:Run")
 
-  def runEject(self) -> Command:
+  def eject(self) -> Command:
     return self.startEnd(
       lambda: self._motor.set(self._constants.kMotorEjectSpeed),
       lambda: self.reset()

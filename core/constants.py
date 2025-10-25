@@ -40,7 +40,7 @@ class Subsystems:
     kTranslationSpeedMax: units.meters_per_second = 4.46
     kRotationSpeedMax: units.degrees_per_second = 360.0
 
-    kInputLimitDemo: units.percent = 0.5
+    kInputLimitDemo: units.percent = 0.6
     kInputRateLimitDemo: units.percent = 0.33
 
     _differentialModuleConstants = DifferentialModuleConstants(
@@ -82,24 +82,28 @@ class Subsystems:
     )
 
   class Arm:
-    kArmConfig = AbsolutePositionControlModuleConfig("Arm", 10, None, True, AbsolutePositionControlModuleConstants(
-      encoderPositionConversionFactor = units.degreesToRadians(360.0),
+    kArmConfig = AbsolutePositionControlModuleConfig("Arm", 10, None, False, AbsolutePositionControlModuleConstants(
+      encoderPositionConversionFactor = 1.0,
       isEncoderInverted = False,
       motorControllerType = SparkLowLevel.SparkModel.kSparkMax,
       motorType = SparkLowLevel.MotorType.kBrushless,
       motorCurrentLimit = 80,
       motorReduction = 1.0 / 1.0,
       motorPID = PID(0.1, 0, 0.01),
-      motorOutputRange = Range(-0.5, 1.0),
+      motorOutputRange = Range(-1.0, 1.0),
       motorMotionMaxVelocity = 5000.0,
       motorMotionMaxAcceleration = 10000.0,
       motorMotionAllowedClosedLoopError = 0.01,
-      motorSoftLimitForward = 0.25,
-      motorSoftLimitReverse = 0.03,
+      motorSoftLimitForward = 0.66,
+      motorSoftLimitReverse = 0.20,
       motorResetSpeed = 0.4
     ))
 
     kArmFollowerConfig = AbsolutePositionControlModuleConfig("ArmFollower", 11, 10, True, kArmConfig.constants)
+
+    kArmPositionIntake = 0.64
+    kArmPositionScoreSalvage = 0.59
+    kArmPositionEjectScrap = 0.52
 
     kInputLimit: units.percent = 1.0
 
@@ -108,7 +112,7 @@ class Subsystems:
     kMotorCurrentLimit: int = 40
     kMotorIntakeSpeed: units.percent = 0.3
     kMotorEjectSpeed: units.percent = 1.0
-    kEjectTimeout: units.seconds = 1.0
+    kEjectTimeout: units.seconds = 1.5
 
 class Services:
   class Localization:
@@ -128,15 +132,7 @@ class Sensors:
       fallbackPoseStrategy = PoseStrategy.LOWEST_AMBIGUITY
     )
 
-    kPoseSensorConfigs: tuple[PoseSensorConfig, ...] = (
-      PoseSensorConfig(
-        "Rear",
-        Transform3d(
-          Translation3d(units.inchesToMeters(-3.0), units.inchesToMeters(0.0), units.inchesToMeters(19.5)),
-          Rotation3d(units.degreesToRadians(0), units.degreesToRadians(-21.5), units.degreesToRadians(-180.0))
-        ), _poseSensorConstants
-      ),
-    )
+    kPoseSensorConfigs: tuple[PoseSensorConfig, ...] = ()
 
   class Camera:
     kStreams: dict[str, str] = {
